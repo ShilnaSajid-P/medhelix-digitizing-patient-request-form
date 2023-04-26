@@ -1,0 +1,186 @@
+{% extends 'home.html' %}
+{%block head_block%}
+
+<style>
+  /* center the form and give it some padding */
+  .container {
+    max-width: 600px;
+    padding: 20px;
+    margin-top: 50px;
+  }
+  .container {
+    border: 1px solid #ddd;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    max-width: 600px;
+  }
+  
+  /* style the form inputs */
+  .form-group {
+    margin-bottom: 20px;
+  }
+  label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  input[type="text"], input[type="date"], .custom-file-label {
+    width: 100%;
+  }
+  input[type="file"] {
+    display: none;
+  }
+  .custom-file-input::before {
+    content: "Choose file";
+  }
+  .custom-file-input::after {
+    content: attr(data-selected-file);
+  }
+  
+  /* style the camera section */
+  #camera {
+    margin-top: 20px;
+    text-align: center;
+  }
+  #video, #canvas {
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+  }
+  #capture-btn, #cancel-btn {
+    margin-right: 10px;
+  }
+</style>
+
+
+{%endblock%}
+
+
+{% block body_block %}
+<div class="container">
+  
+  <center><h1 class="text-2xl font-bold mb-4">Upload Prescription</h1></center>
+  <form method="POST" enctype="multipart/form-data" action="{% url 'base' %}">
+    {% csrf_token %}
+    <div class="form-group">
+      {{ form.serial_no.label_tag }}
+      {{ form.serial_no }}
+  </div>
+    <div class="form-group">
+      {{ form.date.label_tag }}
+      {{ form.date }}
+  </div>           
+    <div class="form-group">
+      <label for="image">Upload Image:</label>
+      <div class="input-group">
+        <div class="custom-file">
+          <input type="file" class="custom-file-input" id="image" name="image" style="border-radius: 4px; padding: 0.5rem; outline: none; border: 1px solid black;">
+          <label class="custom-file-label" for="image">Choose file</label>
+        </div>
+        <div class="input-group-append">
+          <button class="btn btn-primary" type="button" id="btnAddByCamera">Use Camera</button>
+        </div>
+        
+      </div>
+    </div>
+    {% csrf_token %}
+    <input type="hidden" name="image_data" id="image_data">
+    <button type="submit" class="btn btn-success">Save Image</button>  </form>
+  
+  <div id="camera" style="display:none">
+    <video id="video" width="320" height="240" autoplay></video>
+    <canvas id="canvas" width="320" height="240"></canvas>
+    <button type="button" class="btn btn-primary" id="capture-btn">Capture</button>
+    <button type="button" class="btn btn-danger" id="cancel-btn">Cancel</button>
+  </div>
+</div>
+
+<script>
+  var imageInput = document.getElementById('image');
+  var cameraBtn = document.getElementById('btnAddByCamera');
+  var video = document.getElementById('video');
+  var canvas = document.getElementById('canvas');
+  var captureBtn = document.getElementById('capture-btn');
+  var cancelBtn = document.getElementById('cancel-btn');
+  var uploadBtn = document.getElementById('upload-btn');
+  
+  function enableCamera() {
+    cameraBtn.disabled = false;
+    imageInput.disabled = false;
+  }
+  var today = new Date().toISOString().split('T')[0];
+    document.getElementsByName("date")[0].setAttribute('min', today);
+    document.getElementsByName("date")[0].setAttribute('placeholder', today);
+  
+  function disableCamera() {
+    cameraBtn.disabled = true;
+    imageInput.disabled = true;
+  }
+  
+  imageInput.addEventListener('change', function() {
+    if (imageInput.value) {
+      disableCamera();
+    } else {
+      enableCamera();
+    }
+  });
+  
+  cameraBtn.addEventListener('click', function() {
+    disableCamera();
+    document.getElementById('camera').style.display = "block";
+    
+    navigator.mediaDevices.getUserMedia({ video: true })
+    .then(function(stream) {
+      video.srcObject = stream;
+    })
+    .catch(function(error) {
+      console.log("Error: " + error);
+    });
+    
+    captureBtn.addEventListener('click', function() {
+      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+			const dataUrl = canvas.toDataURL('image/png');
+			// Set the data URL as the source of the image preview element
+			imagePreview.src = dataUrl;
+			// Set the data URL as the value of the hidden input field
+			imageDataInput.value = dataUrl;
+    });
+    
+cancelBtn.addEventListener('click', function() {
+enableCamera();
+document.getElementById('camera').style.display = "none";
+video.pause();
+video.srcObject.getTracks().forEach(function(track) {
+track.stop();
+});
+video.srcObject = null;
+});
+});
+imageInput.addEventListener('change', function() {
+if (this.files && this.files[0]) {
+disableCamera();
+}
+});
+
+function enableCamera() {
+btnAddByCamera.disabled = false;
+}
+
+function disableCamera() {
+btnAddByCamera.disabled = true;
+}
+
+function dataURLtoFile(dataURL) {
+var arr = dataURL.split(',');
+var mime = arr[0].match(/:(.*?);/)[1];
+var bstr = atob(arr[1]);
+var n = bstr.length;
+var u8arr = new Uint8Array(n);
+while(n--) {
+u8arr[n] = bstr.charCodeAt(n);
+}
+return new File([u8arr], 'image', { type: mime });
+}
+
+</script>
+{% endblock %} 

@@ -1,0 +1,18 @@
+{
+  "name": "medhelix-digitizing-patient-request-form",
+  "version": "1.0.0",
+  "description": "It is a python-django project to upload doctors prescriptions along with a prescription ID and date.We can display the Prescription image by using Prescription ID or by using uploaded Date.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx tailwindcss -i tailwnd.css -o ./medhelix/myapp/static/css/output.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.3.1"
+  },
+  "dependencies": {
+    "@tailwindcss/forms": "^0.5.3"
+  }
+}

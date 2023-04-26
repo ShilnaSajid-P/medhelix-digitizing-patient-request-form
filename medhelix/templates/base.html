@@ -1,0 +1,52 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{%block body_block%}
+<div class="container mt-5">
+	<h1 class="mb-5">Webcam Capture</h1>
+  <div class="row">
+    <div class="col-md-6">
+      <div id="video-container">
+        <video id="video" autoplay muted></video>
+      </div>
+      <button id="capture" class="btn btn-primary">Capture</button>
+    </div>
+    <div class="col-md-6">
+      <img id="image-preview">
+    </div>
+  </div>
+  
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Save Image</button>
+  </form>
+</div>
+<script>
+const video = document.getElementById('video');
+const canvas = document.createElement('canvas');
+const captureButton = document.getElementById('capture');
+const imagePreview = document.getElementById('image-preview');
+	// Get access to the camera
+	navigator.mediaDevices.getUserMedia({video: true})
+		.then((stream) => {
+			video.srcObject = stream;
+		});
+
+	// Capture the image when the button is clicked
+	captureButton.addEventListener('click', () => {
+		// Set the canvas dimensions to match the video element
+		canvas.width = video.videoWidth;
+		canvas.height = video.videoHeight;
+		// Draw the video frame onto the canvas
+		canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+		// Convert the canvas image to a data URL
+		const dataUrl = canvas.toDataURL('image/png');
+		 // Set the data URL as the source of the image preview element
+		imagePreview.src = dataUrl;
+		// Set the data URL as the value of the hidden input field
+		document.getElementById('id_image_data').value = dataUrl;
+	});
+</script>
+
+{% endblock %} 

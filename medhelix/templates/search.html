@@ -1,0 +1,74 @@
+{% extends 'home.html' %}
+
+{% block body_block %}
+<div class="container ">
+    <div class="flex justify-left items-center min-h-screen">
+<div class="rounded py-8 px-12 m-16 flex flex-col items-center justify-center" style="background-color: white; box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2), 0px 4px 6px rgba(0, 0, 0, 0.2); margin-top: -30px;">
+            <center><h1 class="text-2xl font-bold mb-4">Search Prescription</h1></center>
+            <form method="post" action="{% url 'search' %}" class="max-w-md mx-auto bg-white p-6 rounded-md">
+                {% csrf_token %}
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="">Search by ID</label><br>
+                        <input type="text" name="prescription_id" id="prescription_id" placeholder="Prescription ID" class="rounded-lg px-4 py-2 w-64 mx-auto focus:outline-none focus:bg-white focus:border-blue-500 border-gray-300" style="border-radius: 4px; padding: 0.5rem; outline: none; ">
+                    </div>
+                </div><br>
+                <div class="form-group">
+                    <label for="">Search by Date</label><br>
+
+                    <input type="date" name="date" id="date" class="rounded-lg px-4 py-2 w-64 mx-auto focus:outline-none focus:bg-white focus:border-blue-500 border-gray-300" style="border-radius: 4px; padding: 0.5rem; outline: none;">
+                </div>
+                <br>
+                
+                <button class="bg-blue-500 hover:bg-blue-600 text-white w-full font-bold py-2 px-4 rounded focus:outline-none" type="submit">Search</button>
+            </form>
+            <div>
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get the ID and Date input fields
+    var idField = document.getElementById("prescription_id");
+    var dateField = document.getElementById("date");
+
+    // Add event listeners to the fields
+    idField.addEventListener("input", function() {
+        if (idField.value !== "") {
+            dateField.disabled = true;
+            dateField.style.color = "#BDBDBD";
+            dateField.style.outline = "none";
+            dateField.style.borderColor = "#BDBDBD";
+            dateField.placeholder = "Date (Disabled)";
+        } else {
+            dateField.disabled = false;
+            dateField.style.color = "black";
+            dateField.style.outline = "1px solid black";
+            dateField.style.borderColor = "black";
+            dateField.placeholder = "Date";
+        }
+    });
+
+    dateField.addEventListener("input", function() {
+        if (dateField.value !== "") {
+            idField.disabled = true;
+            idField.style.color = "#BDBDBD";
+            idField.style.outline = "none";
+            idField.style.borderColor = "#BDBDBD";
+            idField.placeholder = "Prescription ID (Disabled)";
+        } else {
+            idField.disabled = false;
+            idField.style.color = "black";
+            idField.style.outline = "1px solid black";
+            idField.style.borderColor = "black";
+            idField.placeholder = "Prescription ID";
+        }
+    });
+</script>
+{% endblock %}

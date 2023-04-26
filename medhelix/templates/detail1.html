@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+{%load static%}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medhelix</title>
+    <!-- Include Tailwind CSS -->
+    <link rel="stylesheet" href="{%static 'css/output.css'%}">
+  </head>
+<body class="bg-gray-100 flex justify-center items-center h-screen">
+  <div class="max-w-md mx-auto bg-white p-6 rounded-md shadow-md mt-12">
+    <h3 class="text-center text-xl font-semibold mb-2">Prescription Detail</h3>
+    <p class="text-center mb-4">Prescription Date: {{ prescription_date }}</p>
+    <h2 class="text-lg font-semibold mb-2">Prescriptions:</h2>
+    <ul>
+    {% for prescription in prescriptions %}
+        <li class="mb-4">
+            <p class="mb-2">Prescription Date: {{ prescription.date }}</p>
+            <p class="text-center"><img src="{{ prescription.image.url }}" alt="" class="w-full max-w-md"></p>
+        </li>
+    {% empty %}
+        <li class="text-center mb-4">No prescriptions found for this date.</li>
+    {% endfor %}
+    </ul>
+    <button class="bg-blue-500 hover:bg-blue-600 text-white w-full font-bold py-1 px-2 rounded mt-4 focus:outline-none text-sm" onclick="redirectToSearch()">OK</button>
+  </div>
+
+  <script>
+    function redirectToSearch() {
+      window.location.href = "{% url 'search' %}";
+    }
+  </script>
+</body>
+</html>
